@@ -907,6 +907,8 @@ class ILoop(config: ShellConfig, inOverride: BufferedReader = null,
     }
   }
 
+  protected def internalReplAutorunCode() :Seq[String] = Seq.empty 
+  
   /** Actions to cram in parallel while collecting first user input at prompt.
     * Run with output muted both from ILoop and from the intp reporter.
     */
@@ -915,6 +917,8 @@ class ILoop(config: ShellConfig, inOverride: BufferedReader = null,
     // we can get at it in generated code.
     intp.quietBind(intp.namedParam[Repl](s"$$intp", intp)(tagOfRepl, classTag[Repl]))
 
+    internalReplAutorunCode().foreach(intp.quietRun)
+    
     // Auto-run code via some setting.
     (config.replAutorunCode.option
       flatMap (f => File(f).safeSlurp())
